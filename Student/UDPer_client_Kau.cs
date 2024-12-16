@@ -131,7 +131,14 @@ namespace Student
                 IPEndPoint ip = new IPEndPoint(IPAddress.Parse(BROADCAST_ADDRESS), PORT_NUMBER);
                 byte[] bytes = udp.EndReceive(ar, ref ip);
                 string message = Encoding.UTF8.GetString(bytes);
-                Debug.WriteLine($"Received message from {ip.Address}, {message}");
+
+                // 메시지의 앞부분 messageLength 글자만 잘라서 표시
+                string truncatedMessage = message.Length > messageLength
+                        ? message.Substring(0, messageLength)
+                        : message;
+
+
+                Debug.WriteLine($"Received message from {ip.Address}, {truncatedMessage}");
 
                 // 다시 수신 대기
                 StartListening();
@@ -152,11 +159,7 @@ namespace Student
                         if //(localIPAddress != null && !ip.Address.Equals(localIPAddress))
                             (localIPAddress != null)
                         {
-                            // 메시지의 앞부분 messageLength 글자만 잘라서 표시
-                            string truncatedMessage = message.Length > messageLength
-                                    ? message.Substring(0, messageLength)
-                                    : message;
-
+                            
                             // 메시지 번호와 패킷 번호 추출
                             int message_num = ExtractNumberPart(truncatedMessage, MESSAGE_NUM);
                             int packet_num = ExtractNumberPart(truncatedMessage, PACKET_NUM);
@@ -165,7 +168,7 @@ namespace Student
                             if (receivedMessageNum == message_num)
                             {
                                 
-                                OnReceiveMessage(truncatedMessage);
+                                // OnReceiveMessage(truncatedMessage);
 
                                 // 해당 메세지 번호의 받은 패킷 번호에 맞는 배열의 index를 set
                                 SetNewMsgBit(packet_num);
